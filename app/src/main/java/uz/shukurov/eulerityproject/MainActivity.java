@@ -1,5 +1,10 @@
 package uz.shukurov.eulerityproject;
 
+/**
+ * @author Jasur Shukurov
+ * @version 03/17/2019
+ */
+
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -18,6 +23,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,7 +68,9 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox mChItalic;
     private CheckBox mChBold;
     private TextView tvPostResponse;
-    private Spinner spinner;
+    private Spinner mSpinner;
+    private SeekBar mSeekBar;
+    private int textSize = 10;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -106,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
         mTextView = findViewById(R.id.textView);
         mButton = findViewById(R.id.button);
         tvPostResponse = findViewById(R.id.post_request_response);
-        spinner = findViewById(R.id.spinner);
+        mSpinner = findViewById(R.id.spinner);
+        mSeekBar = findViewById(R.id.seekBar);
     }
 
     private void parseJson(String jsonStr) {
@@ -130,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayAdapter<FontFamily> adapter = new ArrayAdapter<FontFamily>(MainActivity.this, android.R.layout.simple_spinner_item,families.getFontFamily());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        mSpinner.setAdapter(adapter);
 
         final EditText editText = findViewById(R.id.editText);
         editText.addTextChangedListener(new TextWatcher() {
@@ -151,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        mSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 
@@ -167,8 +176,29 @@ public class MainActivity extends AppCompatActivity {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FontFamily a = (FontFamily) spinner.getSelectedItem();
+                FontFamily a = (FontFamily) mSpinner.getSelectedItem();
                 jsonObjectRequest(a);
+            }
+        });
+
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+                mTextView.setTextSize(textSize +i);
+
+                textSize = i;
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 
@@ -186,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         mChBold.setEnabled(true);
 
 
-        FontFamily selectedFont = (FontFamily) spinner.getSelectedItem();
+        FontFamily selectedFont = (FontFamily) mSpinner.getSelectedItem();
 
         if(selectedFont.getRegular() != null){
             download(RequestCode.base_url + selectedFont.getRegular().getUrl());
@@ -246,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void jsonObjectRequest(final FontFamily selectedFont) {
 
-         String postUrl;
+        String postUrl;
 
         if(mChItalic.isChecked() && mChBold.isChecked())
             postUrl = selectedFont.getBoldAndItalic().getUrl();
@@ -266,6 +296,7 @@ public class MainActivity extends AppCompatActivity {
         params.put("fontFamilyName", selectedFont.getName());
         params.put("italic", String.valueOf(mChItalic.isChecked()));
         params.put("bold", String.valueOf(mChItalic.isChecked()));
+        params.put("size", String.valueOf(textSize));
 
         JSONObject parameters = new JSONObject(params);
 
@@ -289,6 +320,11 @@ public class MainActivity extends AppCompatActivity {
         Volley.newRequestQueue(this).add(jsonRequest);
     }
 
+
+    /**
+     * displayToast: creates Toast
+     * @param text
+     */
     private void displayToast(String text){
 
         Toast.makeText(MainActivity.this,text,Toast.LENGTH_LONG).show();
@@ -443,7 +479,7 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String file_url) {
             // Display the custom font after the File was downloaded !
 
-               loadfont(fontName);
+            loadfont(fontName);
         }
     }
 
