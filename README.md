@@ -39,5 +39,5 @@ POST a JSON to the /makeText endpoint with the following fields :
 Any other fields you come up with.
 </p>
 
-![image](https://user-images.githubusercontent.com/15109181/54492639-ca71d080-489e-11e9-9c92-87692b685de0.png)
-![image](https://user-images.githubusercontent.com/15109181/54492652-e2e1eb00-489e-11e9-9906-695f06c9871d.png)
+![image](gif/1.gif)
+![image](gif/2.gif)
